@@ -71,8 +71,8 @@ function inflate() {
         if (poppedNumber == 1) {
             popBalloon();
         } else {
-            points += .05;
-            formatter.format(points)
+            points += 5;
+            // formatter.format(points)
             inflations += 1;
             inflateAudio.play();
             inflateBalloonImage();
@@ -84,10 +84,10 @@ function inflate() {
 // Function to store points into lastBalloon
 function storePoints() {
     if (inflations > 0) {
-        points = Math.ceil(points * factor) / factor;
-        formatter.format(points)
+        // points = Math.ceil(points * factor) / factor;
+        // formatter.format(points)
         totalPoints += points;  // Take cart of adding points to total, storing to vectors, and reseting point total
-        formatter.format(totalPoints)
+        // formatter.format(totalPoints)
         pointsOverTime.push(totalPoints); // Push running total to dataframe 
         pointsPerBalloon.push(points); // Push points for the balloon to dataframe
         balloonInflations.push(inflations); // Push number of inflations to dataframe
@@ -135,7 +135,7 @@ function moveToNextBalloon() {
             perfectInflations = bestPossibleGame(currentBalloon);
             perfectScore = perfectInflations * .05;
             optimalInflations.push(perfectInflations);
-            perfectScore = Math.ceil(perfectScore * factor) / factor;
+            // perfectScore = Math.ceil(perfectScore * factor) / factor;
             perfectGame.push(perfectScore);
             blueIndex++
             document.getElementById("balloonImage").src = blueImage;
@@ -144,7 +144,7 @@ function moveToNextBalloon() {
             perfectInflations = bestPossibleGame(currentBalloon);
             perfectScore = perfectInflations * .05;
             optimalInflations.push(perfectInflations);
-            perfectScore = Math.ceil(perfectScore * factor) / factor;
+            // perfectScore = Math.ceil(perfectScore * factor) / factor;
             perfectGame.push(perfectScore);
             orangeIndex++
             document.getElementById("balloonImage").src = orangeImage;
@@ -153,7 +153,7 @@ function moveToNextBalloon() {
             perfectInflations = bestPossibleGame(currentBalloon);
             perfectScore = perfectInflations * .05;
             optimalInflations.push(perfectInflations);
-            perfectScore = Math.ceil(perfectScore * factor) / factor;
+            // perfectScore = Math.ceil(perfectScore * factor) / factor;
             perfectGame.push(perfectScore);
             yellowIndex++
             document.getElementById("balloonImage").src = yellowImage;

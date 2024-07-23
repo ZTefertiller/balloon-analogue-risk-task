@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy Agreement</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .form-group {
+            margin-top: 20px;
+        }
+        .form-group label {
+            display: flex;
+            align-items: center;
+        }
+        .form-group input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .form-group button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        .form-group button:disabled {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Privacy Policy</h1>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <p>You reserve the right to quit the task at any given time.</p>
+    <div class="form-group">
+        <label>
+            <input type="checkbox" id="agreeCheckbox">
+            I agree to the terms and conditions
+        </label>
+    </div>
+    <div class="form-group">
+        <button id="submitButton" disabled>Submit</button>
+    </div>
+</div>
+<script src="jatos.js"></script>
+<script>
+    const checkbox = document.getElementById('agreeCheckbox');
+    const submitButton = document.getElementById('submitButton');
+
+    checkbox.addEventListener('change', function() {
+        submitButton.disabled = !this.checked;
+    });
+
+    submitButton.addEventListener('click', function() {
+        const agreement = checkbox.checked;
+        const data = {
+            agreedToTerms: agreement,
+            timestamp: new Date().toISOString()
+        };
+
+        if (typeof jatos !== 'undefined') {
+            jatos.submitResultData(data).then(() => {
+            jatos.startNextComponent();
+                }).catch((error) => {
+                console.error("Error submitting data:", error);
+                alert("Error submitting data. Please try again.");
+                });
+        }
+    });
+</script>
+</body>
+</html>

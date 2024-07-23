@@ -19,6 +19,7 @@ let perfectGame = [];
 let factor = Math.pow(10, 2);
 const options = { style: 'currency', currency: 'USD' };
 const formatter = new Intl.NumberFormat('en-US', options);
+reversal == false
 
 // Define start of trial parameters 
 let points = 0;
@@ -83,7 +84,27 @@ function inflate() {
 
 // Function to store points into lastBalloon
 function storePoints() {
+    //reversal learning adaptation between Blue and Orange balloons. 
     if (inflations > 0) {
+        if (reversal == false) {
+            if (balloonType == "b")
+                if (counter > 6) {
+                    reversal = true
+                    counter = 0
+                } else if (counter < 6)
+                    if (inflations > 16){
+                        counter++
+                    }
+        } else if (reversal == true) {
+            if (balloonType == "o")
+                if (counter > 6) {
+                    reversal = true
+                    counter = 0
+                } else if (counter < 6)
+                    if (inflations > 16){
+                        counter++
+                    }
+        }
         points = Math.ceil(points * factor) / factor;
         formatter.format(points)
         totalPoints += points;  // Take cart of adding points to total, storing to vectors, and reseting point total
