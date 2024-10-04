@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Instructions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .form-group {
+            margin-top: 20px;
+        }
+        .form-group label {
+            display: flex;
+            align-items: center;
+        }
+        .form-group input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .form-group button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        .form-group button:disabled {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Task instructions: Please read carefully.</h1>
+    <p>Throughout the task, you will be presented with 120 balloons, one at a time. For each balloon you can click on the button labeled 
+        “Pump Up the Balloon” to increase the size of the balloon. You will accumulate 5 points in a temporary bank for each pump. 
+         You will not be shown the amount you have accumulated in your temporary bank. At any point, you can stop pumping up the balloon and click on the
+         button labeled “Collect Points”. Clicking this button will start you on the next balloon and will transfer the accumulated points from your 
+         temporary bank to your permanent bank. The amount you earned on the previous balloon is shown at the top of the screen.
+         It is your choice to determine how much to pump up the balloon, but be aware that at some point the balloon will explode. 
+         The explosion point varies across balloons, ranging from the first pump to enough pumps to make the balloon fill the entire computer screen. 
+         If the balloon explodes before you click on “Collect Points,” then you move on to the next balloon and all points in your temporary bank are lost. 
+         Exploded balloons do not affect the money accumulated in your permanent bank. This task should take about 15 minutes. Please maximized
+         your browser window before starting the task.</p>
+    <div class="form-group">
+        <label>
+            <input type="checkbox" id="agreeCheckbox">
+            I have maximized the browser window and am ready to start the task.
+        </label>
+    </div>
+    <div class="form-group">
+        <button id="submitButton" disabled>Submit</button>
+    </div>
+</div>
+<script src="jatos.js"></script>
+<script>
+    const checkbox = document.getElementById('agreeCheckbox');
+    const submitButton = document.getElementById('submitButton');
+
+    checkbox.addEventListener('change', function() {
+        submitButton.disabled = !this.checked;
+    });
+
+    submitButton.addEventListener('click', function() {
+        const agreement = checkbox.checked;
+        const data = {
+            agreedToTerms: agreement,
+            timestamp: new Date().toISOString()
+        };
+
+        if (typeof jatos !== 'undefined') {
+            jatos.submitResultData(data).then(() => {
+            jatos.startNextComponent();
+                }).catch((error) => {
+                console.error("Error submitting data:", error);
+                alert("Error submitting data. Please try again.");
+                });
+        }
+    });
+</script>
+</body>
+</html>
