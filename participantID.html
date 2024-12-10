@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Participant Code</title>
+    <style>
+        body {
+            font-family: "OpenDyslexic", Arial, sans-serif;
+            font-size: 18px;
+            line-height: 1.8;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f8ff;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 28px;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input, select {
+            margin-top: 5px;
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 22px;
+            background-color: #34495e;
+            color: white;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        #abortButton {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000; 
+        }
+        select {
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+        p {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Participant Code</h1>
+    <form id="participantForm">
+        <label for="birthPlaceLetters">1. Enter the first two letters of the city you were born in:</label>
+        <input type="text" id="birthPlaceLetters" name="birthPlaceLetters" maxlength="2" required>
+        
+        <label for="birthMonth">2. Enter your birth month:</label>
+        <select id="birthMonth" name="birthMonth" required>
+            <option value="">Select a month</option>
+            <!-- Options will be populated dynamically -->
+        </select>
+        
+        <label for="motherNameLetters">3. Enter the first two letters of your Mother's first name:</label>
+        <input type="text" id="motherNameLetters" name="motherNameLetters" maxlength="2" required>
+        
+        <label for="lastNameLetters">4. Enter the last two letters of your birth surname (last name):</label>
+        <input type="text" id="lastNameLetters" name="lastNameLetters" maxlength="2" required>
+        
+        <button type="button" class="btn" onclick="submitParticipantCode()">Next</button>
+    </form>
+    <button id="abortButton" onclick="abortStudy()">Abort Study</button>
+
+    <script src="jatos.js"></script>
+    <script>
+        function populateMonthDropdown() {
+            const monthSelect = document.getElementById('birthMonth');
+            const monthNames = [
+                '01 - January', '02 - February', '03 - March', '04 - April', '05 - May', '06 - June',
+                '07 - July', '08 - August', '09 - September', '10 - October', '11 - November', '12 - December'
+            ];
+            monthNames.forEach((month, index) => {
+                const option = document.createElement('option');
+                option.value = (index + 1).toString().padStart(2, '0');
+                option.text = month;
+                monthSelect.appendChild(option);
+            });
+        }
+
+        function generateParticipantID() {
+            const birthPlace = document.getElementById('birthPlaceLetters').value.trim().toUpperCase();
+            const birthMonth = document.getElementById('birthMonth').value.trim();
+            const motherName = document.getElementById('motherNameLetters').value.trim().toUpperCase();
+            const lastName = document.getElementById('lastNameLetters').value.trim().toUpperCase();
+
+            return birthPlace + birthMonth + motherName + lastName;
+        }
+
+        function submitParticipantCode() {
+            const requiredFields = [
+                'birthPlaceLetters',
+                'birthMonth',
+                'motherNameLetters',
+                'lastNameLetters'
+            ];
+
+            let allValid = true;
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    field.style.borderColor = 'red'; // Indicate error
+                    allValid = false;
+                } else {
+                    field.style.borderColor = ''; // Reset style
+                }
+            });
+
+            if (!allValid) {
+                alert('Please fill out all required fields.');
+                return;
+            }
+
+            const participantID = generateParticipantID();
+            console.log('Participant ID:', participantID);
+
+            const participantData = { participant_id: participantID };
+
+            jatos.studySessionData = { ...jatos.studySessionData, ...participantData };
+            jatos.studySessionData.participantID = participantID;
+            jatos.submitResultData(JSON.stringify(participantData), function() {
+                jatos.startNextComponent();
+            }, function(error) {
+                console.error('Data submission failed:', error);
+                alert('There was an error submitting your data. Please try again.');
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            populateMonthDropdown();
+        });
+
+        function abortStudy() {
+            if (confirm("Are you sure you want to abort the study? You will be redirected to Prolific and marked as incomplete.")) {
+                const redirectUrl = 'https://app.prolific.com/submissions/complete?cc=CDIAK6SI';
+                jatos.endStudyAndRedirect(redirectUrl);
+            }
+        }
+    </script>
+</body>
+</html>

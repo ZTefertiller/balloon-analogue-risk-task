@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Instructions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        #abortButton {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            padding: 10px 15px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .main-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end; /* Align bottom edges */
+            width: 90%;
+            max-width: 1200px;
+        }
+
+        .instructions-container {
+            width: 35%; /* Centered within left half */
+            background: #fff;
+            padding: 20px 30px;
+            padding-left: 40px; /* Added left padding */
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative; /* For absolute positioning of prompt */
+            height: 500px; /* Fixed height to prevent resizing */
+            overflow: hidden; /* Hide overflow to maintain size */
+        }
+
+        .instructions h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .instructions ul {
+            padding-left: 20px;
+        }
+
+        .instructions ul li {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .instructions p {
+            font-size: 24px; /* Adjusted font size for clarity */
+            margin-top: 15px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .balloon-container {
+            width: 55%; /* Centered within right half */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            height: 100%;
+            transform: translateY(-8%); /* Shift upwards by 8% */
+            margin-left: -5%;
+        }
+
+        #balloonImage {
+            width: 450px; /* Increased size by 2.5x */
+            height: 450px; /* Increased size by 2.5x */
+            transition: width 0.2s, height 0.2s;
+            position: absolute;
+            bottom: 0; /* Align bottom with instructions box */
+            left: 50%;
+            transform: translateX(-50%);
+            transform-origin: bottom center; /* Ensures scaling starts from the bottom */
+        }
+
+        #congratsMessage {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px; /* Larger font size */
+            color: black; /* Black font color */
+            font-weight: bold;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            z-index: 500;
+            display: none; /* Hidden by default */
+        }
+
+        /* Notification Message Styling */
+        #notificationMessage {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px; /* Increased font size */
+            color: #333;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            z-index: 500;
+            display: none; /* Hidden by default */
+        }
+
+        #inflatePrompt {
+            position: absolute;
+            bottom: 20px; /* Position it near the bottom of instructions box */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 20px; /* Increased font size */
+            color: #333;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            display: none; /* Hidden by default */
+        }
+
+        #popMessage {
+            position: absolute; /* Positioned within balloon-container */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: red;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 600;
+            display: none; /* Hidden by default */
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .form-group {
+            margin-top: 30px;
+            text-align: center;
+            width: 100%;
+            display: flex;
+            justify-content: space-between; /* Align buttons to left and right */
+        }
+
+        .form-group button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            background-color: #007BFF;
+            color: white;
+            flex: 1;
+            max-width: 45%; /* Ensure buttons don't take full width */
+        }
+
+        .hidden-button {
+            visibility: hidden; /* Hides the button but maintains space */
+        }
+
+        .form-group button#backToPage1,
+        .form-group button#backToPage2 {
+            background-color: #6c757d;
+        }
+
+        #instructionsPage3 .instructions {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center content horizontally */
+            justify-content: center; /* Center content vertically */
+            height: 100%; /* Fill the instructions container */
+            text-align: center;
+        }
+
+        #instructionsPage3 .instructions ul {
+            padding-left: 0; /* Remove left padding for centered list */
+            list-style: none; /* Remove bullets */
+        }
+
+        #instructionsPage3 .instructions ul li {
+            font-size: 18px; /* Slightly larger font */
+            margin-bottom: 15px;
+        }
+
+        #instructionsPage3 .form-group {
+            justify-content: center; /* Center buttons */
+            gap: 20px; /* Add space between buttons */
+        }
+
+        #instructionsPage3 .form-group button {
+            max-width: 200px;
+            width: 45%; /* Maintain consistent button sizing */
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .instructions-container,
+            .balloon-container {
+                width: 90%;
+                margin-left: 0;
+                transform: translateY(0);
+            }
+
+            #balloonImage {
+                width: 300px;
+                height: 300px;
+            }
+
+            /* Adjust form-group buttons */
+            .form-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .form-group button {
+                max-width: 80%;
+                width: 100%;
+            }
+
+            #instructionsPage3 .form-group button {
+                max-width: 200px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button id="abortButton" onclick="abortStudy()" aria-label="Abort Study">Abort Study</button>
+    <div id="notificationMessage"></div>
+    <div class="main-container">
+        <div class="instructions-container">
+            <div id="instructionsPage1" class="instructions-page">
+                <div class="instructions">
+                    <h1>Task Instructions</h1>
+                    <ul>
+                        <li>You will encounter 120 balloons, presented one at a time.</li>
+                        <li>Press the <b>F</b> key or the <b>Left Arrow</b> key to <b>inflate the balloon</b>. Each inflation adds 5 points to your temporary bank.</li>
+                        <li>Press the <b>J</b> key or the <b>Right Arrow</b> key to <b>collect points</b>. This moves the points from your temporary bank to your permanent bank and moves on to the next balloon.</li>
+                    </ul>
+                    <p id="instructionSentence">Try inflating the balloon five times with <b>F</b> or <b>Left Arrow</b> keys.</p>
+                    <div id="inflatePrompt" class="hidden">Great! Now try collecting points using the <b>J</b> or <b>Right Arrow</b> keys.</div>
+                    <div id="inflationCounter">Inflations: 0/5</div>
+                    <div class="form-group">
+                        <button id="backToPage0" class="hidden-button" aria-label="Back">Back</button>
+                        <button id="nextToPage2" aria-label="Next">Next</button>
+                    </div>
+                </div>
+            </div>
+            <div id="instructionsPage2" class="instructions-page hidden">
+                <div class="instructions">
+                    <h1>Task Instructions</h1>
+                    <ul>
+                        <li>If the balloon pops before you collect points, you lose all points in your temporary bank for that balloon.</li>
+                        <li>The explosion point varies for each balloon. The balloon can explode on the first inflation or fill up the entire window.</li>
+                        <li>The speed at which you inflate the balloon does <b>not</b> affect its likelihood of popping.</li>
+                    </ul>
+                    <p>Keep inflating this balloon with 'F' or Left Arrow until it pops.</p>
+                    <div id="inflationCounter2">Inflations: 0/10</div>
+                    <div class="form-group">
+                        <button id="backToPage1" aria-label="Back">Back</button>
+                        <button id="nextToPage3" aria-label="Next">Next</button>
+                    </div>
+                </div>
+            </div>
+            <div id="instructionsPage3" class="instructions-page hidden">
+                <div class="instructions">
+                    <h1>Task Overview</h1>
+                    <ul>
+                        <li>This task takes approximately 30 minutes to complete.</li>
+                        <li>Note: if you do not pump or cash-in a balloon within 30 seconds, the current balloon will be marked as inactive.</li>
+                        <li><b>If you have too many inactive balloons, you will be removed from the study.</b></li>
+                        <li>You are now ready to begin the task.</li>
+                    </ul>
+                    <div class="form-group">
+                        <button id="backToPage2" aria-label="Back">Back</button>
+                        <button id="startTaskButton" aria-label="Start Task">Start Task</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="balloon-container">
+            <img id="balloonImage" src="trialBalloon.png" alt="Balloon">
+            <div id="popMessage">The balloon has popped! No points were earned.</div>
+        </div>
+    </div>
+    <div id="congratsMessage" class="hidden">Congrats, you just banked 25 points!</div>
+
+    <!-- Audio Elements -->
+    <audio id="inflateAudio" src="inflate.mp3"></audio>
+    <audio id="bankAudio" src="bankAudio.mp3"></audio>
+    <audio id="popAudio" src="popAudio.mp3"></audio>
+    <script src="jatos.js"></script>
+    <script>
+        let studyInProgress = true;
+        let participantID = null;
+                    jatos.onLoad(() => {
+                        console.log("Session Data:", jatos.sessionData);
+                        participantID = jatos.studySessionData?.participantID || 'test';
+                        if (participantID !== 'test') {
+                            console.log("Participant ID from session data:", participantID);
+                        } else {
+                            console.warn("Session data or Participant ID is not set. Using fallback ID:", participantID);
+                        }
+                    });
+
+        const firstPage = document.getElementById('instructionsPage1');
+        const secondPage = document.getElementById('instructionsPage2');
+        const thirdPage = document.getElementById('instructionsPage3');
+
+        const nextToPage2 = document.getElementById('nextToPage2');
+        const nextToPage3 = document.getElementById('nextToPage3');
+        const backToPage1 = document.getElementById('backToPage1');
+        const backToPage2 = document.getElementById('backToPage2');
+        const startTaskButton = document.getElementById('startTaskButton');
+
+        const balloonImage = document.getElementById('balloonImage');
+        const inflateAudio = document.getElementById('inflateAudio');
+        const bankAudio = document.getElementById('bankAudio');
+        const popAudio = document.getElementById('popAudio');
+
+        const congratsMessage = document.getElementById('congratsMessage');
+        const instructionSentence = document.getElementById('instructionSentence');
+        const notificationMessage = document.getElementById('notificationMessage');
+        const inflatePrompt = document.getElementById('inflatePrompt');
+        const popMessage = document.getElementById('popMessage');
+
+        // Variables for balloon interaction
+        let pressCount; // Current number of inflations
+        let maxPresses; // Maximum allowed inflations
+
+        let isCollecting = false; // Flag to track if collecting points
+        let mode = 'page1'; // Default mode
+        let isPopping = false; // Flag to prevent multiple pop noises
+
+        // Define scaling parameters
+        const minSize = 450; // Initial size (2.5x of 175px)
+        const maxSizePage1 = 600; // Maximum size for Page1 after 5 inflations
+        const maxSizePage2 = 600; // Maximum size for Page2 after 10 inflations
+
+        // Function to set balloon parameters based on current mode
+        function setBalloonParameters() {
+            if (mode === 'page1') {
+                pressCount = 0; // Reset inflations
+                maxPresses = 5; // Allow five inflations
+                instructionSentence.innerHTML = `Try inflating the balloon five times with <b>F</b> or <b>Left Arrow</b> keys.`;
+                inflatePrompt.classList.add('hidden'); // Hide prompt if visible
+                isCollecting = false; // Reset collecting flag
+                isPopping = false; // Reset popping flag
+                popMessage.style.display = 'none'; // Ensure pop message is hidden
+                balloonImage.style.display = 'block'; // Ensure balloon is visible
+                balloonImage.style.width = `${minSize}px`; // Reset size
+                balloonImage.style.height = `${minSize}px`; // Reset size
+                document.getElementById('inflationCounter').textContent = `Inflations: 0/${maxPresses}`;
+            } else if (mode === 'page2') {
+                pressCount = 0; // Reset inflations
+                maxPresses = 10; // Allow ten inflations
+                instructionSentence.innerHTML = `Try inflating this balloon until it pops using <b>F</b> or <b>Left Arrow</b> keys.`;
+                inflatePrompt.classList.add('hidden'); // Hide prompt if visible
+                isCollecting = false; // Reset collecting flag
+                isPopping = false; // Reset popping flag
+                popMessage.style.display = 'none'; // Ensure pop message is hidden
+                balloonImage.style.display = 'block'; // Ensure balloon is visible
+                balloonImage.style.width = `${minSize}px`; // Reset size
+                balloonImage.style.height = `${minSize}px`; // Reset size
+                document.getElementById('inflationCounter2').textContent = `Inflations: 0/${maxPresses}`;
+            } else if (mode === 'page3') {
+                // Hide the balloon on Page 3
+                balloonImage.style.display = 'none';
+                popMessage.style.display = 'none';
+                isCollecting = false;
+                isPopping = false;
+                inflatePrompt.classList.add('hidden');
+            }
+        }
+
+        // Function to display notification messages
+        function showNotification(message, duration = 5000) { // Default duration to 5 seconds
+            notificationMessage.textContent = message;
+            notificationMessage.style.display = 'block';
+            setTimeout(() => {
+                notificationMessage.style.display = 'none';
+            }, duration);
+        }
+
+        // Function to calculate balloon size logarithmically
+        function calculateLogarithmicSize(count, maxCount) {
+            const scaleFactor = Math.log(count + 1) / Math.log(maxCount + 1);
+            if (mode === 'page1') {
+                return minSize + scaleFactor * (maxSizePage1 - minSize);
+            } else if (mode === 'page2') {
+                return minSize + scaleFactor * (maxSizePage2 - minSize);
+            }
+            return minSize;
+        }
+
+        // Function to inflate the balloon
+        function inflateBalloon() {
+            if (isPopping) return; // Prevent inflation during popping/resetting
+
+            if (mode === 'page1' && isCollecting) return; // Do nothing if collecting points on page1
+
+            if (pressCount >= maxPresses) {
+                if (mode === 'page2') {
+                    popBalloon();
+                }
+                return;
+            }
+            pressCount++;
+            inflateAudio.currentTime = 0;
+            inflateAudio.play();
+
+            // Calculate new size based on logarithmic scaling
+            const newSize = calculateLogarithmicSize(pressCount, maxPresses);
+            balloonImage.style.width = `${newSize}px`;
+            balloonImage.style.height = `${newSize}px`;
+
+            if (mode === 'page1' && pressCount === maxPresses) {
+                // After five inflations on page1, prompt to collect points
+                instructionSentence.innerHTML = `Great! Now try collecting points using the <b>J</b> or <b>Right Arrow</b> keys.`;
+                isCollecting = true; // Enter collecting mode
+                inflatePrompt.classList.remove('hidden'); // Show prompt
+            }
+
+            // Update inflation counters
+            if (mode === 'page1') {
+                document.getElementById('inflationCounter').textContent = `Inflations: ${pressCount}/${maxPresses}`;
+            } else if (mode === 'page2') {
+                document.getElementById('inflationCounter2').textContent = `Inflations: ${pressCount}/${maxPresses}`;
+            }
+        }
+
+        // Function to collect points (only relevant for page1)
+        function collectPoints() {
+            if (mode !== 'page1') return; // Do nothing on page2 or page3
+
+            if (!isCollecting) {
+                showNotification('Please inflate the balloon five times before collecting points.', 5000); // Increased duration
+                return;
+            }
+
+            bankAudio.currentTime = 0;
+            bankAudio.play();
+            showNotification('Points collected! Moving to the next balloon.', 5000); // Increased duration
+
+            // Reset the balloon to initial state
+            resetBalloon();
+
+            // Show the congratulatory message
+            congratsMessage.style.display = 'block'; // Show the congrats message
+
+            // Exit collecting mode
+            isCollecting = false;
+
+            // Hide the congratulatory message after 5 seconds
+            setTimeout(() => {
+                congratsMessage.style.display = 'none';
+            }, 5000); // Hide after 5 seconds
+        }
+
+        // Function to pop the balloon (only relevant for page2)
+        function popBalloon() {
+            if (isPopping) return; // Prevent multiple pop actions
+            isPopping = true; // Set flag to indicate popping is in progress
+
+            if (mode === 'page1') {
+                showNotification('The balloon popped! You lost all points for this balloon.', 5000); // Increased duration
+            } else if (mode === 'page2') {
+                // Play pop audio
+                popAudio.currentTime = 0;
+                popAudio.play();
+
+                // Hide the balloon image
+                balloonImage.style.display = 'none';
+
+                // Show pop message directly over the balloon image
+                popMessage.style.display = 'block';
+
+                // After 8 seconds, hide pop message and reset balloon to initial state
+                setTimeout(() => {
+                    popMessage.style.display = 'none';
+                    resetBalloon();
+                    isPopping = false; // Reset flag after popping and resetting
+                }, 8000);
+            }
+
+            // Reset collecting flag and hide any prompts/messages
+            isCollecting = false;
+            inflatePrompt.classList.add('hidden');
+            congratsMessage.style.display = 'none';
+        }
+
+        // Function to reset the balloon based on current mode
+        function resetBalloon() {
+            setBalloonParameters();
+        }
+
+        // Key press event listener
+        window.addEventListener('keydown', (event) => {
+            const key = event.key.toLowerCase();
+
+            if (mode === 'page1') {
+                if (key === 'f' || key === 'arrowleft') {
+                    inflateBalloon();
+                } else if (key === 'j' || key === 'arrowright') {
+                    collectPoints();
+                }
+            } else if (mode === 'page2') {
+                if (key === 'f' || key === 'arrowleft') {
+                    inflateBalloon();
+                }
+                // Do nothing for 'j' or 'arrowright' on page2
+            }
+            // Do nothing on page3
+        });
+
+        // Navigation buttons
+        nextToPage2.addEventListener('click', () => {
+            firstPage.classList.add('hidden');
+            secondPage.classList.remove('hidden');
+            mode = 'page2';
+            setBalloonParameters();
+        });
+
+        backToPage1.addEventListener('click', () => {
+            secondPage.classList.add('hidden');
+            firstPage.classList.remove('hidden');
+            mode = 'page1';
+            setBalloonParameters();
+        });
+
+        nextToPage3.addEventListener('click', () => {
+            secondPage.classList.add('hidden');
+            thirdPage.classList.remove('hidden');
+            mode = 'page3';
+            setBalloonParameters();
+        });
+
+        backToPage2.addEventListener('click', () => {
+            thirdPage.classList.add('hidden');
+            secondPage.classList.remove('hidden');
+            mode = 'page2';
+            setBalloonParameters();
+        });
+
+        // Event listener for Start Task button
+        startTaskButton.addEventListener('click', () => {
+            // Optionally, you can log the time or any other data here
+            jatos.submitResultData({ instructions_time: new Date().toISOString() }).then(() => {
+                goToNextComponent();
+            }).catch((error) => {
+                console.error("Error submitting data:", error);
+                showNotification("Error submitting data. Please try again.", 5000); // Increased duration
+            });
+        });
+
+        // Initialize balloon parameters on page load
+        window.onload = function() {
+            setBalloonParameters();
+        }
+
+        // Function to abort the study
+        function abortStudy() {
+            if (confirm("Are you sure you want to abort the study? You will be redirected to Prolific and marked as incomplete.")) {
+                const redirectUrl = 'https://app.prolific.com/submissions/complete?cc=CDIAK6SI';
+                studyInProgress = false;
+                jatos.endStudyAndRedirect(redirectUrl);
+            }
+        }
+
+        function goToNextComponent() {
+            studyInProgress = false; // Disable the warning before navigation
+            jatos.startNextComponent(); // Now no prompt will show
+        }
+
+        window.onbeforeunload = function (event) {
+            if (studyInProgress) {
+                event.preventDefault();
+                event.returnValue = 'Are you sure you want to abort the study? Your progress will be lost and the study will be marked as incomplete.';
+                return event.returnValue;
+            }
+        };
+
+    </script>
+</body>
+</html>

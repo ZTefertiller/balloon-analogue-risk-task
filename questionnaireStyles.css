@@ -1,0 +1,137 @@
+
+body {
+    font-family: 'Opendyslexic', Geneva, Tahoma, sans-serif;
+    background-color: #f4f4f9;
+    color: #000000;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    font-size: 28px;
+}
+
+#abortButton {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    padding: 10px 15px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.page {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.question-container {
+    margin-bottom: 30px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    padding: 15px;
+    transition: background-color 0.3s ease;
+}
+
+.question-container.answered {
+    background-color: #e0f0ff;
+}
+
+#confirmation-page button {
+    font-size: 16px;
+    padding: 10px 20px;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+#confirmation-page button:hover {
+    background-color: #3b4fff;
+}
+
+.question {
+    margin: 20px 0;
+    margin-bottom: 10px;
+    padding: 0;
+    font-size: 18px;
+        text-align: center;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.btn-option {
+    font-size: 16px;
+    padding: 10px 20px;
+    margin: 5px;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-option.pressed, .btn-option:hover {
+    background-color: #3b4fff;
+    color: white;
+}
+
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.navigation .btn-prev {
+    margin-right: auto;
+}
+
+.navigation .btn-next {
+    margin-left: auto;
+}
+
+.navigation .btn {
+    padding: 10px 30px;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.navigation .btn:hover {
+    background-color: #3b4fff;
+}
+
+
