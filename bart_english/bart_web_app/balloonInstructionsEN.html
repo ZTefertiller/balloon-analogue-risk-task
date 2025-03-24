@@ -278,7 +278,7 @@
                     <h1>Task Instructions</h1>
                     <ul>
                         <li>You will encounter a series of balloons, presented one at a time. Here is an example of how the task will look (not counting toward your bonus).</li>
-                        <li>Press the <b>F</b> key or the <b>Left Arrow</b> key to <b>inflate the balloon</b>. Each inflation adds €0.003 to your temporary bank.</li>
+                        <li>Press the <b>F</b> key or the <b>Left Arrow</b> key to <b>inflate the balloon</b>. Each inflation adds €___ to your temporary bank.</li>
                         <li>Press the <b>J</b> key or the <b>Right Arrow</b> key to <b>collect money</b>. This moves the money from your temporary bank to your permanent bank and moves on to the next balloon.</li>
                     </ul>
                     <p id="instructionSentence">Try inflating the balloon with <b>F</b> or <b>Left Arrow</b> keys.</p>
@@ -307,10 +307,10 @@
                     <h1>Task Overview</h1>
                     <div id="timer" style="font-size: 24px; font-weight: bold;"></div>
                     <ul>
-                        <li>The task will take approximately 15 minutes to complete and will have 180 balloons. You will have a short break after.</li>
+                        <li>The task will take approximately __ minutes to complete and will have ___ balloons. You will have a short break after.</li>
                         <li><b>Note: if you do not pump or cash-in a balloon within 15 seconds, the current balloon will be marked as inactive and earn no money.</b></li>
                         <li><b>If you have too many inactive balloons, you will be removed from the study.</b></li>
-                        <li>Remember, though it is only £0.003 per inflation, you could gain as much as £15 in bonus!</li>
+                        <li>Remember, though it is only €__ per inflation, you could gain as much as €__ in bonus!</li>
                         <li>Please do not refresh the page, as this will remove you from the study. It may take a moment for the next page to load at the end. </li>
                         <li>You are now ready to begin the task. You may start the task now, or it will begin automatically at the end of the timer.</li>
                     </ul>
@@ -325,15 +325,15 @@
             <div id="popMessage">The balloon has popped! No bonus money was earned.</div>
         </div>
     </div>
-    <div id="congratsMessage" class="hidden">Congrats, you just earned €0.02!</div>
+    <div id="congratsMessage" class="hidden">Congrats, you just earned €0.25!</div>
 
     <!-- Audio Elements -->
     <audio id="inflateAudio" src="../bart_english/sounds/inflate.mp3"></audio>
     <audio id="bankAudio" src="../bart_english/sounds/bankAudio.mp3"></audio>
     <audio id="popAudio" src="../bart_english/sounds/popAudio.mp3"></audio>
     <script src="jatos.js"></script>
-    <script src="../bart_web_app/redirectLinksEN.js"></script>
-    <script src="../bart_web_app/introInactivityEN.js"></script>
+    <script src="../bart_english/bart_web_app/redirectLinksEN.js"></script>
+    <script src="../bart_english/bart_web_app/introInactivityEN.js"></script>
     <script>
         let studyInProgress = true;
         let participantID = null;

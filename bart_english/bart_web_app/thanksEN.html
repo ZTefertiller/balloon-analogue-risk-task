@@ -8,9 +8,9 @@
 
         @font-face {
             font-family: 'OpenDyslexic';
-            src: url('../fonts/OpenDyslexic-Regular.woff2') format('woff2'),
-                url('../fonts/OpenDyslexic-Regular.woff') format('woff'),
-                url('../fonts/OpenDyslexic-Regular.otf') format('opentype');
+            src: url('../bart_english/fonts/OpenDyslexic-Regular.woff2') format('woff2'),
+                url('../bart_english/fonts/OpenDyslexic-Regular.woff') format('woff'),
+                url('../bart_english/fonts/OpenDyslexic-Regular.otf') format('opentype');
             font-weight: 400; /* normal weight */
             font-style: normal;
         }
@@ -80,10 +80,14 @@
     </div>
     <a id="redirectLink">Click here to return to franziskaknolle.com</a>
     <p class="redirect-message">You will be redirected automatically after 60 seconds if you don’t click the link.</p>
-    <script src="../bart_web_app/redirectLinksEN.js"></script>
+    <script src="../bart_english/bart_web_app/redirectLinksEN.js"></script>
     <script src="jatos.js"></script>
     <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('redirectLink').href = window.studyCompletedLink;
+        });
+
         // Redirect after 60 seconds 
         let shouldWarn = true;
         setTimeout(() => {
@@ -118,7 +122,7 @@
                 .catch(error => console.error("Error submitting result data:", error))
                 .then(() => {
                     setTimeout(() => {
-                        jatos.endStudy();
+                        jatos.endStudyAndRedirect(window.studyCompletedLink);
                     }, 60000);
                 });
         });
@@ -132,10 +136,11 @@
         });
 
         // If user clicks the redirect link, no warning and end the study via JATOS
-        document.getElementById('redirectLink').addEventListener('click', function() {
-            shouldWarn = false;
-            jatos.endStudyAndRedirect();           // no argument needed
-        });
+        document.getElementById('redirectLink').addEventListener('click', function(event) {
+        event.preventDefault();           // stop the default anchor behavior
+        shouldWarn = false;              // disable unload warning
+        jatos.endStudyAndRedirect(window.studyCompletedLink);
+    });
 
     </script>
 </body>
