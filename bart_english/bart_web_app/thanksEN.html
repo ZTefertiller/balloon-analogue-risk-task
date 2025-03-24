@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You</title>
+    <style>
+
+        @font-face {
+            font-family: 'OpenDyslexic';
+            src: url('../fonts/OpenDyslexic-Regular.woff2') format('woff2'),
+                url('../fonts/OpenDyslexic-Regular.woff') format('woff'),
+                url('../fonts/OpenDyslexic-Regular.otf') format('opentype');
+            font-weight: 400; /* normal weight */
+            font-style: normal;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+            font-family: 'Opendyslexic', Geneva, Tahoma, sans-serif;
+            text-align: center;
+            color: #333;
+            padding: 0 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        h1 {
+            margin-top: 20px;
+            font-size: 2em;
+            color: #333;
+        }
+        .score-container {
+            margin-top: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .score-container p {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+        .score-container p strong {
+            color: #555;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        a:hover {
+            background-color: #45a049;
+        }
+        .redirect-message {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <img src="../bart_english/images/thanks.png" alt="Thank You!">
+    <h1>Thank you for participating!</h1>
+    <div class="score-container">
+        <p><strong>Your bonus amount:</strong> <span id="totalMoney">Loading...</span></p>
+    </div>
+    <a id="redirectLink">Click here to return to franziskaknolle.com</a>
+    <p class="redirect-message">You will be redirected automatically after 60 seconds if you don’t click the link.</p>
+    <script src="../bart_web_app/redirectLinksEN.js"></script>
+    <script src="jatos.js"></script>
+    <script>
+        document.getElementById('redirectLink').href = window.studyCompletedLink;
+        // Redirect after 60 seconds 
+        let shouldWarn = true;
+        setTimeout(() => {
+            shouldWarn = false;
+            jatos.endStudyAndRedirect(studyCompletedLink);
+        }, 60000);
+
+        const startTime = new Date().toISOString();
+        let prolificID = '';
+        let participantID = '';
+        let totalMoney = '';
+
+        jatos.onLoad(() => {
+            // Fetch session data
+            // prolificID = jatos.studySessionData?.prolificID || 'null';
+            participantID = jatos.studySessionData?.participantID || 'null';
+            totalMoney = jatos.studySessionData?.totalMoney || 'null';
+            document.getElementById('totalMoney').innerText = totalMoney !== 'null' ? `£${totalMoney}` : 'N/A';
+            console.log("Participant ID:", participantID !== 'null' ? participantID : "Using fallback participant ID.");
+
+            const resultData = {
+                // prolific_id: prolificID,
+                participant_id: participantID,
+                bonus_payment: totalMoney,
+                timestamp_start: startTime,
+                timestamp_end: new Date().toISOString()
+            };
+
+            // Submit result data to JATOS
+            jatos.submitResultData(JSON.stringify(resultData))
+                .then(() => console.log("Result data submitted successfully:", resultData))
+                .catch(error => console.error("Error submitting result data:", error))
+                .then(() => {
+                    setTimeout(() => {
+                        jatos.endStudy();
+                    }, 60000);
+                });
+        });
+
+        // Warn only if the user tries to close the browser entirely
+        window.addEventListener('beforeunload', function (e) {
+            if (shouldWarn) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // If user clicks the redirect link, no warning and end the study via JATOS
+        document.getElementById('redirectLink').addEventListener('click', function() {
+            shouldWarn = false;
+            jatos.endStudyAndRedirect();           // no argument needed
+        });
+
+    </script>
+</body>
+</html>
