@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balloon Task</title>
+    <link rel="stylesheet" href="../bart_english/bart_web_app/bartStyles.css">
+    <script src="jatos.js"></script> 
+</head>
+<body>
+    <div id="instructions">
+        <h2>Anweisungen</h2>
+        <p>Drücken Sie <strong>'F'</strong> oder <strong>Pfeil nach links</strong>, um den Ballon aufzublasen.</p>
+        <p>Drücken Sie <strong>'J'</strong> oder <strong>Pfeil nach rechts</strong>, um Ihre Punkte einzulösen.</p>
+    </div>    
+    <img id="balloonImage" src="" alt="Resizable Image">
+    <audio id="inflateAudio" src="../bart_english/sounds/inflate.mp3"></audio>
+    <audio id="bankAudio" src="../bart_english/sounds/bankAudio.mp3"></audio>
+    <audio id="popAudio" src="../bart_english/sounds/popAudio.mp3"></audio>
+    <div id="message"></div>
+    <div id="balloon"></div>
+    <div id="piggyContainer">
+        <img id="piggyBank" src="../bart_english/images/piggyBank.png">
+        <div id="totalPoints"style="font-size: 3em;"><span id="totalPoints">0</span></div>  
+    </div>
+    <div id="lastBalloon"></div>
+    <div id="balloonInflations"></div>
+    <div id="messageContainer"></div>
+    <button id="abortButton" onclick="abortStudy()" aria-label="Abort Study">Abort Study</button>
+    <script src="../bart_english/bart_web_app/bartLoopEN.js"></script>
+    <script src="../bart_english/bart_web_app/redirectLinksEN.js"></script>
+    <script>
+    // BART task - 180RL
+    // Zachary Tefertiller - zachary.tefertiller@tum.de
+    // Date: December 2024
+    // Knolle Lab, Graduate School of Systemic Neurosciences, LMU, TUM, Munich
+
+    document.addEventListener("DOMContentLoaded", function() {
+        fetch('../bart_english/balloon_randomizations/testBalloons.json')
+            .then(response => response.json())
+            .then(data => initializeWithData(data))
+            .catch(error => console.error('Error loading JSON data:', error));
+    });
+
+    let blueImage = "../bart_english/images/royalblue.png";
+    let orangeImage = "../bart_english/images/dullorange.png";
+    let yellowImage = "../bart_english/images/yellow.png";
+    let participantID = null;
+    maxInactive = 5
+    let studyInProgress = true
+
+    jatos.onLoad(() => {
+        participantID = jatos.studySessionData?.participantID || 'test';
+        if (participantID !== 'test') {
+            console.log("Participant ID from session data:", participantID);
+        } else {
+            console.warn("Using fallback participant ID:", participantID);
+        }
+    });
+
+    </script>
+</body>
+</html>
+

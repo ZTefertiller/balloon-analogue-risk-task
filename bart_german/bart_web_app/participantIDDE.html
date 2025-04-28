@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Participant Code</title>
+    <style>
+
+        @font-face {
+            font-family: 'OpenDyslexic';
+            src: url('../bart_english/fonts/OpenDyslexic-Regular.woff2') format('woff2'),
+                url('../bart_english/fonts/OpenDyslexic-Regular.woff') format('woff'),
+                url('../bart_english/fonts/OpenDyslexic-Regular.otf') format('opentype');
+            font-weight: 400; /* normal weight */
+            font-style: normal;
+            }
+        body {
+            font-family: 'Opendyslexic', Geneva, Tahoma, sans-serif;
+            font-size: 18px;
+            line-height: 1.8;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f8ff;
+            text-align: center;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 28px;
+            font-family: 'Opendyslexic', Geneva, Tahoma, sans-serif;
+        }
+        .form-group {
+            margin-top: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-family: 'Opendyslexic', Geneva, Tahoma, sans-serif;
+        }
+        .form-group select {
+            padding: 10px;
+            font-size: 16px;
+            margin: 5px;
+            font-family: 'Opendyslexic', Geneva, Tahoma, sans-serif;
+        }
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 22px;
+            background-color: #34495e;
+            color: white;
+            margin-top: 20px;
+            font-family: 'Opendyslexic', Geneva, Tahoma, sans-serif;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        #abortButton {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            padding: 10px 15px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Opendyslexic', Geneva, Tahoma, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teilnehmenden‑Code</h1>
+<form id="participantForm">
+    <div class="form-group">
+        <label for="birthPlaceLetters">1. Wählen Sie die ersten beiden Buchstaben der Stadt, in der Sie geboren wurden:</label>
+        <select id="birthPlaceLetters1" required></select>
+        <select id="birthPlaceLetters2" required></select>
+    </div>
+    <div class="form-group">
+        <label for="birthMonth">2. Geben Sie Ihren Geburtsmonat ein:</label>
+        <select id="birthMonth" name="birthMonth" required>
+            <option value="">Monat auswählen</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label for="motherNameLetters">3. Wählen Sie die ersten beiden Buchstaben des Vornamens Ihrer Mutter:</label>
+        <select id="motherNameLetters1" required></select>
+        <select id="motherNameLetters2" required></select>
+    </div>
+    
+    <div class="form-group">
+        <label for="lastNameLetters">4. Wählen Sie die letzten beiden Buchstaben Ihres Geburtsnachnamens:</label>
+        <select id="lastNameLetters1" required></select>
+        <select id="lastNameLetters2" required></select>
+    </div>
+</form>
+    <div style="margin-top: 20px;">
+        <button type="button" class="btn" onclick="submitParticipantCode()">Next</button>
+    </div>    
+    <button id="abortButton" onclick="abortStudy()">Abort Study</button>
+
+    <script src="jatos.js"></script>
+    <script src="../bart_english/bart_web_app/redirectLinksEN.js"></script>
+    <script src="../bart_english/bart_web_app/inactivityEN.js"></script>
+    <script>
+        const startTime = new Date().toISOString();
+        // uncomment for prolific integration
+        // let prolificID = null;
+        //     jatos.onLoad(() => {
+        //         prolificID = jatos.studySessionData?.prolificID || 'test';
+        //         if (prolificID !== 'test') {
+        //             console.log("Participant ID from session data:", prolificID);
+        //         } else {
+        //             console.warn("Using fallback participant ID:", prolificID);
+        //         }
+        //     });
+
+        function populateMonthDropdown() {
+            const monthSelect = document.getElementById('birthMonth');
+            const monthNames = [
+                '01 - January', '02 - February', '03 - March', '04 - April', '05 - May', '06 - June',
+                '07 - July', '08 - August', '09 - September', '10 - October', '11 - November', '12 - December'
+            ];
+            monthNames.forEach((month, index) => {
+                const option = document.createElement('option');
+                option.value = (index + 1).toString().padStart(2, '0');
+                option.text = month;
+                monthSelect.appendChild(option);
+            });
+        }
+
+        function populateLetterDropdowns() {
+            const letterOptions = [];
+            for (let i = 65; i <= 90; i++) { // ASCII values for A-Z
+                letterOptions.push(String.fromCharCode(i));
+            }
+
+            const letterDropdowns = [
+                'birthPlaceLetters1', 'birthPlaceLetters2',
+                'motherNameLetters1', 'motherNameLetters2',
+                'lastNameLetters1', 'lastNameLetters2'
+            ];
+
+            letterDropdowns.forEach(id => {
+                const select = document.getElementById(id);
+
+                // Add a blank default option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.text = 'Select a letter';
+                select.appendChild(defaultOption);
+
+                letterOptions.forEach(letter => {
+                    const option = document.createElement('option');
+                    option.value = letter;
+                    option.text = letter;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        function generateParticipantID() {
+            const birthPlace = document.getElementById('birthPlaceLetters1').value + 
+                               document.getElementById('birthPlaceLetters2').value;
+            const birthMonth = document.getElementById('birthMonth').value;
+            const motherName = document.getElementById('motherNameLetters1').value + 
+                               document.getElementById('motherNameLetters2').value;
+            const lastName = document.getElementById('lastNameLetters1').value + 
+                             document.getElementById('lastNameLetters2').value;
+
+            return birthPlace.toUpperCase() + birthMonth + motherName.toUpperCase() + lastName.toUpperCase();
+        }
+
+        function submitParticipantCode() {
+            const requiredFields = [
+                'birthPlaceLetters1', 'birthPlaceLetters2',
+                'birthMonth',
+                'motherNameLetters1', 'motherNameLetters2',
+                'lastNameLetters1', 'lastNameLetters2'
+            ];
+
+            let allValid = true;
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    field.style.borderColor = 'red'; 
+                    allValid = false;
+                } else {
+                    field.style.borderColor = ''; 
+                }
+            });
+
+            if (!allValid) {
+                alert('Please fill out all required fields.');
+                return;
+            }
+
+            const participantID = generateParticipantID();
+            console.log('Participant ID:', participantID);
+
+            const participantData = { 
+                // uncomment for prolific integration
+                // prolific_id: prolificID,
+                participant_id: participantID,
+                timestamp_start: startTime,
+                timestamp_end: new Date().toISOString()
+             };
+
+            jatos.studySessionData = { ...jatos.studySessionData, ...participantData };
+            jatos.studySessionData.participantID = participantID;
+            jatos.submitResultData(JSON.stringify(participantData), function() {
+                jatos.startNextComponent();
+            }, function(error) {
+                console.error('Data submission failed:', error);
+                alert('There was an error submitting your data. Please try again.');
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            populateMonthDropdown();
+            populateLetterDropdowns();
+        });
+
+    </script>
+</body>
+</html>
