@@ -70,7 +70,7 @@ function inflate() {
         } else {
             points += 5;
             inflations += 1;
-            currentBalloonMoney = inflations * 0.05; 
+            currentBalloonMoney = inflations * 0.003; 
             updatePiggyBankDisplay();
             inflateAudio.play();
             inflateBalloonImage();
@@ -109,7 +109,7 @@ function storePoints() {
         inflations = 0;
         bankAudio.play();  
         message.style.display = 'block';
-        message.innerHTML = `Sie haben €${(trialData.inflations * 0.05).toFixed(2)} verdient!<br>Nächster Durchgang in 5 Sekunden (oder drücken Sie Leertaste, um fortzufahren).`;
+        message.innerHTML = `Sie haben €${(trialData.inflations * 0.003).toFixed(3)} verdient!<br>Nächster Durchgang in 5 Sekunden (oder drücken Sie Leertaste, um fortzufahren).`;
         balloonImage.style.display = 'none';
         document.getElementById('lastBalloon').style.display = 'none';
         document.getElementById("totalPoints").style.display = 'none';
@@ -348,7 +348,7 @@ function calculateAverageInflationRT() {
 
 function updatePiggyBankDisplay() {
     document.getElementById("totalPoints").textContent = 
-        `€${(totalMoney + currentBalloonMoney).toFixed(2)}`;
+        `€${(totalMoney + currentBalloonMoney).toFixed(3)}`;
 }
 
 function waitToProceed() {

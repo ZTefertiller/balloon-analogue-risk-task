@@ -24,6 +24,15 @@
             align-items: center;
             position: relative;
         }
+        .centered-instructions {
+            align-items: center !important;
+            text-align: center;
+        }
+        .main-container.centered {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
         #abortButton {
             position: fixed;
             top: 10px;
@@ -39,7 +48,7 @@
         .main-container {
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
+            align-items: center;
             width: 90%;
             max-width: 1200px;
         }
@@ -54,9 +63,13 @@
             flex-direction: column;
             align-items: flex-start;
             position: relative;
+            min-height: 450px;  /* force it to stay as tall as Page 3’s box */
+        }
+        .instructions-container.wide {
+            width: 50%; /* or whatever you want, 60% is usually good */
         }
         .instructions h1 {
-            font-size: 24px;
+            font-size: 32px;
             margin-bottom: 20px;
             text-align: center;
             width: 100%;
@@ -81,9 +94,49 @@
             align-items: center;
             position: relative;
             height: 100%;
-            transform: translateY(-8%);
+            transform: translateY(0);
             margin-left: -5%;
         }
+        #practicePiggyContainer {
+            position: absolute;
+            top: -500px; /* moved down 50px */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 480px; /* Size remains good */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 500;
+        }
+        #practicePiggyContainer img {
+            width: 100%;
+            height: auto;
+        }
+
+        #practiceTotalPoints {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3.3rem;
+            font-weight: 700;
+            color: #111;
+            text-shadow: 0 0 4px rgba(255,255,255,0.8);
+        }
+
+        .balloon-container {
+            width: 55%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            height: 450px; /* Set explicit height to match balloon */
+            margin-left: -5%;
+            transform: translateY(240px); /* <-- ADD THIS */
+        }
+
+
         #balloonImage {
             width: 450px;
             height: 450px;
@@ -108,18 +161,20 @@
             display: none;
         }
         #congratsMessage {
-            position: fixed;
-            bottom: 20px;
+            position: absolute;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
             font-size: 24px;
             font-weight: bold;
             background-color: rgba(255,255,255,0.9);
-            padding: 10px 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             display: none;
+            color: green; /* Optional: to visually distinguish cash-in from popping */
         }
+
         #notificationMessage {
             position: fixed;
             top: 60px;
@@ -147,7 +202,7 @@
         .form-group {
             margin-top: 30px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             width: 100%;
         }
         .form-group button {
@@ -165,6 +220,11 @@
             .main-container { flex-direction: column; align-items: center; }
             .instructions-container, .balloon-container { width:90%; transform:translateY(0); margin-left:0; }
             #balloonImage { width:300px; height:300px; }
+            #practicePiggyContainer { 
+                top: -400px; /* moved down 50px on mobile */
+                width: 360px;
+                height: 300px;
+            }
             .form-group { flex-direction: column; }
             .form-group button { width:100%; max-width:80%; }
         }
@@ -175,140 +235,164 @@
     <div id="notificationMessage"></div>
     <div class="main-container">
         <div class="instructions-container">
-            <div id="instructionsPage1" class="instructions-page">
-                <div class="instructions">
-                    <h1>Aufgabenanweisungen</h1>
-                    <ul>
-                        <li>Sie sehen nacheinander eine Reihe von Ballons. Dieses Beispiel zählt nicht zu Ihrem Bonus.</li>
-                        <li>Drücken Sie <b>F</b> oder <b>Pfeil nach links</b>, um den Ballon aufzublasen. Jede Aufblasaktion fügt €___ Ihrem temporären Konto hinzu.</li>
-                        <li>Drücken Sie <b>J</b> oder <b>Pfeil nach rechts</b>, um das Geld einzusammeln und zum nächsten Ballon zu wechseln.</li>
-                    </ul>
-                    <p id="instructionSentence">Versuchen Sie, den Ballon mit <b>F</b> oder <b>Pfeil nach links</b> aufzublasen.</p>
-                    <div id="inflatePrompt" class="hidden">Super! Jetzt mit <b>J</b> oder <b>Pfeil nach rechts</b> das Geld einsammeln.</div>
-                    <div class="form-group"><button id="nextToPage2">Weiter</button></div>
+                <div id="instructionsPage0" class="instructions-page">
+                    <div class="instructions">
+                        <h1 style="font-size: 48px; font-weight: bold; text-align: center;">Herzlich Willkommen zu unserem Ballon-Spiel</h1>
+                        <div class="form-group">
+                            <button id="nextToPage1">Weiter</button>
+                        </div>
+                    </div>
+                </div>        
+                <div id="instructionsPage1" class="instructions-page hidden">
+                    <div class="instructions">
+                        <h1>Willkommen</h1>
+                        <p style="font-size: 20px; text-align: center; margin-top: 30px;">
+                            In diesem Spiel werden Sie viele Luftballons aufblasen. Umso mehr Sie den einzelnen Ballon aufblasen, umso größer ist Ihr Bonus, den Sie bekommen. Platzt der Ballon jedoch, verdienen Sie nichts.
+                        </p>
+                        <div class="form-group">
+                            <button id="nextToPage2">Weiter</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="instructionsPage2" class="instructions-page hidden">
+                    <div class="instructions">
+                        <h1>Anleitung</h1>
+                        <ul>
+                            <li>Nun sehen Sie ein Beispiel, wie das Spiel abläuft (dieses Beispiel zählt noch nicht zu Ihrem Bonus).</li>
+                            <li>Drücken Sie die <b>F-Taste</b> um den Ballon aufzublasen. Jedes Aufblasen bringt Ihnen einen Bonus von €0.003 auf Ihr temporäres Konto.</li>
+                            <li>Drücken Sie die <b>J-Taste</b> um den Bonus tatsächlich zu erhalten. Mit diesem Schritt verschieben Sie den Bonus von Ihrem temporären Konto auf Ihr dauerhaftes Konto. </li>
+                        </ul>
+                        <p id="instructionSentence">Versuchen Sie jetzt, den Ballon mit der <b>F-Taste</b> aufzublasen. Sie sehen wie Ihr Bonus ansteigt!</p>
+                        <div id="inflatePrompt" class="hidden">Super! Sammeln Sie jetzt Ihren Bonus ein, indem Sie die <b>J-Taste</b> drücken. So verdienen Sie Ihren Bonus!</div>
+                        <div class="form-group"><button id="nextToPage3">Weiter</button></div>
+                    </div>
+                </div>
+                <div id="instructionsPage3" class="instructions-page hidden">
+                    <div class="instructions">
+                        <h1>Anleitung</h1>
+                        <ul>
+                            <li>Platzt der Ballon, bevor Sie den Bonus eingesammelt haben, verlieren Sie den gesamten Bonus für diesen einen Ballon.</li>
+                            <li>Jeder Ballon platzt bei einer anderen Größe. Manche platzen beim ersten Aufblasen, andere können so groß werden, dass Sie das ganze Fenster ausfüllen.</li>
+                            <li>Bedenken Sie, dass die Geschwindigkeit, mit der Sie den Ballon aufblasen, <b>keinen</b> Einfluss darauf hat, wann er platzt.</li>
+                        </ul>
+                        <p>Versuchen Sie diesen Ballon jetzt mit der <b>F-Taste</b> so lange aufzublasen, bis er platzt.</p>
+                        <div class="form-group"><button id="nextToPage4">Weiter</button></div>
+                    </div>
+                </div>
+                <div id="instructionsPage4" class="instructions-page hidden">
+                    <div class="instructions">
+                        <h1>Aufgabenübersicht</h1>
+                        <div id="timer"></div>
+                        <ul>
+                            <li>Die Aufgabe dauert ungefähr <b>15 Minuten</b> und umfasst <b>180 Ballons.</b> Danach gibt es eine kurze Pause.</li>
+                            <li><b>Hinweis:</b> Wenn Sie innerhalb von 15 Sekunden den Ballon weder aufblasen noch den Bonus einsammeln, wird dieser Ballon nicht gewertet und Sie erhalten kein Geld dafür.</li>
+                            <li>Wenn zu viele Ballons nicht gewertet werden können, müssen wir Sie aus der Studie ausschliessen.</li>
+                            <li>Denken Sie daran: Auch wenn Sie pro Aufblasen nur €0.003 verdienen, können Sie insgesamt einen Bonus von bis zu <b>€15 Bonus</b> erreichen!</li>
+                            <li><span style="font-size: 26px; font-weight: 900;">Bitte aktualisieren Sie die Seite zu keinem Zeitpunkt</span> – auch wenn es einen kurzen Moment dauert, bis die nächste Seite lädt – dadurch würde Ihre Teilnahme abgebrochen.</li>                            <li>Sie können nun die Aufgabe starten!</li>
+                        </ul>
+                        <div class="form-group"><button id="startTaskButton">Aufgabe starten</button></div>
+                    </div>
                 </div>
             </div>
-            <div id="instructionsPage2" class="instructions-page hidden">
-                <div class="instructions">
-                    <h1>Aufgabenanweisungen</h1>
-                    <ul>
-                        <li>Platzt der Ballon bevor Sie einsammeln, verlieren Sie das temporäre Geld.</li>
-                        <li>Der Explosionspunkt variiert – er kann sofort platzen oder voll aufgeblasen werden.</li>
-                        <li>Die Aufblasgeschwindigkeit hat <b>keinen</b> Einfluss auf die Pop-Wahrscheinlichkeit.</li>
-                    </ul>
-                    <p>Blasen Sie diesen Ballon mit <b>F</b> oder <b>Pfeil nach links</b> auf, bis er platzt.</p>
-                    <div class="form-group"><button id="nextToPage3">Weiter</button></div>
-                </div>
-            </div>
-            <div id="instructionsPage3" class="instructions-page hidden">
-                <div class="instructions">
-                    <h1>Übersicht der Aufgabe</h1>
-                    <div id="timer"></div>
-                    <ul>
-                        <li>Die Aufgabe dauert ca. __ Minuten und hat ___ Ballons. Danach kurze Pause.</li>
-                        <li><b>Hinweis:</b> Keine Aktion innerhalb von 15 Sekunden = Ballon inaktiv, kein Geld.</li>
-                        <li>Zu viele inaktive Ballons führen zum Ausschluss aus der Studie.</li>
-                        <li>Obwohl nur €__ pro Aufblasen, können Sie bis zu €__ Bonus verdienen!</li>
-                        <li>Seite nicht aktualisieren – Teilnahme endet sonst.</li>
-                        <li>Sie sind bereit. Starten Sie jetzt oder warten Sie auf den Timer.</li>
-                    </ul>
-                    <div class="form-group"><button id="startTaskButton">Aufgabe starten</button></div>
-                </div>
-            </div>
-        </div>
         <div class="balloon-container">
+            <div id="practicePiggyContainer" class="hidden">
+                <img id="piggyBank" src="../bart_german/images/piggyBank.png" alt="Piggy Bank">
+                <span id="practiceTotalPoints">0.000€</span>
+            </div>  
             <img id="balloonImage" src="../bart_english/images/trialBalloon.png" alt="Ballon">
             <div id="popMessage">Der Ballon ist geplatzt! Kein Bonusgeld verdient.</div>
+            <div id="congratsMessage" class="hidden">Den Bonus haben Sie somit verdient!</div> 
         </div>
     </div>
-    <div id="congratsMessage" class="hidden">Glückwunsch! Sie haben €0,25 verdient!</div>
-    <audio id="inflateAudio" src="../bart_english/sounds/inflate.mp3"></audio>
-    <audio id="bankAudio" src="../bart_english/sounds/bankAudio.mp3"></audio>
-    <audio id="popAudio" src="../bart_english/sounds/popAudio.mp3"></audio>
+    <div id="congratsMessage" class="hidden">Glückwunsch! Sie haben €0,015 verdient!</div>
+    <audio id="inflateAudio" src="../bart_german/sounds/inflate.mp3"></audio>
+    <audio id="bankAudio" src="../bart_german/sounds/bankAudio.mp3"></audio>
+    <audio id="popAudio" src="../bart_german/sounds/popAudio.mp3"></audio>
     <script src="jatos.js"></script>
-    <script src="../bart_english/bart_web_app/redirectLinksEN.js"></script>
-    <script src="../bart_english/bart_web_app/introInactivityEN.js"></script>
+    <script src="../bart_german/bart_web_app/redirectLinksDE.js"></script>
     <script>
+
         let studyInProgress = true;
         let participantID = null;
-        jatos.onLoad(() => {
-            console.log("Session Data:", jatos.sessionData);
-            participantID = jatos.studySessionData?.participantID || 'test';
-            if (participantID !== 'test') {
-                console.log("Participant ID from session data:", participantID);
-            } else {
-                console.warn("Session data or Participant ID is not set. Using fallback ID:", participantID);
-            }
-        });
-        const startTime = new Date().toISOString();
+        let balloonVisible = true; // true when balloon can be inflated
 
+        jatos.onLoad(() => {
+            participantID = jatos.studySessionData?.participantID || 'test';
+        });
+
+        let practicePoints = 0;
+        let savedPracticePoints = 0;
+        let practiceCurrentBalloonPoints = 0;
+
+        function updatePracticePiggyBank() {
+            document.getElementById('practiceTotalPoints').textContent = practicePoints.toFixed(3) + '€';
+                   }
+
+        const startTime = new Date().toISOString();
         const firstPage = document.getElementById('instructionsPage1');
         const secondPage = document.getElementById('instructionsPage2');
         const thirdPage = document.getElementById('instructionsPage3');
+        const fourthPage = document.getElementById('instructionsPage4');
 
+        const nextToPage1 = document.getElementById('nextToPage1');
         const nextToPage2 = document.getElementById('nextToPage2');
         const nextToPage3 = document.getElementById('nextToPage3');
+        const nextToPage4 = document.getElementById('nextToPage4');
         const startTaskButton = document.getElementById('startTaskButton');
-
+    
         const balloonImage = document.getElementById('balloonImage');
         const inflateAudio = document.getElementById('inflateAudio');
         const bankAudio = document.getElementById('bankAudio');
         const popAudio = document.getElementById('popAudio');
-
+    
         const congratsMessage = document.getElementById('congratsMessage');
         const instructionSentence = document.getElementById('instructionSentence');
         const notificationMessage = document.getElementById('notificationMessage');
         const inflatePrompt = document.getElementById('inflatePrompt');
         const popMessage = document.getElementById('popMessage');
-
+    
         // Variables for balloon interaction
-        let pressCount; // Current number of inflations
-        let maxPresses; // Maximum allowed inflations
-
-        let isCollecting = false; // Flag to track if collecting points
-        let mode = 'page1'; // Default mode
-        let isPopping = false; // Flag to prevent multiple pop noises
-
-        // Define scaling parameters
-        const minSize = 450; // Initial size
-        const maxSizePage1 = 600; // Maximum size for Page1 after 5 inflations
-        const maxSizePage2 = 600; // Maximum size for Page2 after 10 inflations
-
-        // Function to set balloon parameters based on current mode
+        let pressCount;
+        let maxPresses;
+        let isCollecting = false;
+        let mode = 'page1';
+        let isPopping = false;
+    
+        // Scaling parameters
+        const minSize = 450;
+        const maxSizePage1 = 600;
+        const maxSizePage2 = 600;
+    
         function setBalloonParameters() {
-            if (mode === 'page1') {
-                pressCount = 0; // Reset inflations
-                maxPresses = 5; // Allow five inflations
-                instructionSentence.innerHTML = `Versuchen Sie, den Ballon mit <b>F</b> oder <b>Pfeil nach links</b> aufzublasen.`;
-                inflatePrompt.classList.add('hidden'); // Hide prompt if visible
-                isCollecting = false; // Reset collecting flag
-                isPopping = false; // Reset popping flag
-                popMessage.style.display = 'none'; // Ensure pop message is hidden
-                balloonImage.style.display = 'block'; // Ensure balloon is visible
-                balloonImage.style.width = `${minSize}px`;
-                balloonImage.style.height = `${minSize}px`;
-            } else if (mode === 'page2') {
-                pressCount = 0; // Reset inflations
-                maxPresses = 10; // Allow ten inflations
-                instructionSentence.innerHTML = `Blasen Sie diesen Ballon mit <b>F</b> oder <b>Pfeil nach links</b> auf, bis er platzt.`;
-                inflatePrompt.classList.add('hidden'); // Hide prompt if visible
-                isCollecting = false; // Reset collecting flag
-                isPopping = false; // Reset popping flag
-                popMessage.style.display = 'none'; // Ensure pop message is hidden
-                balloonImage.style.display = 'block'; // Ensure balloon is visible
-                balloonImage.style.width = `${minSize}px`;
-                balloonImage.style.height = `${minSize}px`;
-            } else if (mode === 'page3') {
-                // Hide the balloon on Page 3
-                balloonImage.style.display = 'none';
-                popMessage.style.display = 'none';
+            if (mode === 'inflate5') {
+                pressCount = 0;
+                maxPresses = 5;
                 isCollecting = false;
                 isPopping = false;
+                inflatePrompt.classList.add('hidden');
+                balloonImage.style.display = 'block';
+                popMessage.style.display = 'none';
+                balloonImage.style.width = `${450}px`;
+                balloonImage.style.height = `${450}px`;
+            } else if (mode === 'inflateUntilPop') {
+                pressCount = 0;
+                maxPresses = 10; // you can set whatever number for popping
+                isCollecting = false;
+                isPopping = false;
+                inflatePrompt.classList.add('hidden');
+                balloonImage.style.display = 'block';
+                popMessage.style.display = 'none';
+                balloonImage.style.width = `${450}px`;
+                balloonImage.style.height = `${450}px`;
+            } else {
+                balloonImage.style.display = 'none';
+                popMessage.style.display = 'none';
                 inflatePrompt.classList.add('hidden');
             }
         }
 
-        // Function to display notification messages
+
+    
         function showNotification(message, duration = 5000) {
             notificationMessage.textContent = message;
             notificationMessage.style.display = 'block';
@@ -316,189 +400,199 @@
                 notificationMessage.style.display = 'none';
             }, duration);
         }
-
-        // Function to calculate balloon size logarithmically
+    
         function calculateLogarithmicSize(count, maxCount) {
             const scaleFactor = Math.log(count + 1) / Math.log(maxCount + 1);
-            if (mode === 'page1') {
-                return minSize + scaleFactor * (maxSizePage1 - minSize);
-            } else if (mode === 'page2') {
-                return minSize + scaleFactor * (maxSizePage2 - minSize);
-            }
-            return minSize;
+            return 450 + scaleFactor * (600 - 450);
         }
 
-        // Function to inflate the balloon
         function inflateBalloon() {
-            if (isPopping) return;
-            if (mode === 'page1' && isCollecting) return;
+            if (isPopping || !balloonVisible) return; // BLOCK if balloon is hidden
+            if (mode === 'inflate5' && isCollecting) return; // block inflation after reaching max inflations in inflate5
 
-            if (pressCount >= maxPresses) {
-                if (mode === 'page2') {
-                    popBalloon();
-                }
-                return;
+            if (mode === 'inflate5') {
+                practicePoints += 0.003;  
+                practiceCurrentBalloonPoints += 0.003;
+                updatePracticePiggyBank();
             }
+
+            if (mode === 'inflateUntilPop') {
+                practicePoints = savedPracticePoints + (pressCount * 0.003); // .3 cents per inflation
+                updatePracticePiggyBank();
+            }
+
             pressCount++;
             inflateAudio.currentTime = 0;
             inflateAudio.play();
 
-            // Calculate new size based on logarithmic scaling
             const newSize = calculateLogarithmicSize(pressCount, maxPresses);
             balloonImage.style.width = `${newSize}px`;
             balloonImage.style.height = `${newSize}px`;
 
-            if (mode === 'page1' && pressCount === maxPresses) {
-                instructionSentence.innerHTML = `Super! Versuchen Sie jetzt, Punkte mit <b>J</b> oder <b>Pfeil nach rechts</b> zu sammeln.`;        
-                isCollecting = true;
+            if (mode === 'inflate5' && pressCount === maxPresses) {
+                instructionSentence.innerHTML = `Super! Sammeln Sie jetzt Ihren Bonus ein, indem Sie die <b>J-Taste</b> drücken. So verdienen Sie Ihren Bonus!`;
                 inflatePrompt.classList.remove('hidden');
+                isCollecting = true;
+            }
+
+            if (mode === 'inflateUntilPop' && pressCount >= maxPresses) {
+                popBalloon();
             }
         }
 
-        // Function to collect points (only relevant for page1)
-        function collectPoints() {
-            if (mode !== 'page1') return;
-
-            if (!isCollecting) {
-                showNotification('Keep inflating!', 5000);
-                return;
-            }
-
-            bankAudio.currentTime = 0;
-            bankAudio.play();
-            showNotification('Bonusgeld gesammelt! Weiter zum nächsten Ballon.', 5000);
-
-            resetBalloon();
-
-            congratsMessage.style.display = 'block';
-
-            isCollecting = false;
-
-            setTimeout(() => {
-                congratsMessage.style.display = 'none';
-            }, 5000);
-        }
-
-        // Function to pop the balloon (only relevant for page2)
+    
         function popBalloon() {
             if (isPopping) return;
             isPopping = true;
 
-            if (mode === 'page1') {
-                showNotification('Der Ballon ist geplatzt! Sie haben das verdiente Geld verloren.', 5000);
-            } else if (mode === 'page2') {
-                popAudio.currentTime = 0;
-                popAudio.play();
+            popAudio.currentTime = 0;
+            popAudio.play();
+            balloonImage.style.display = 'none';
+            popMessage.style.display = 'block';
 
-                balloonImage.style.display = 'none';
-                popMessage.style.display = 'block';
-
-                setTimeout(() => {
-                    popMessage.style.display = 'none';
-                    resetBalloon();
-                    isPopping = false;
-                }, 8000);
-            }
+            setTimeout(() => {
+                popMessage.style.display = 'none';
+                resetBalloon();
+                isPopping = false;
+            }, 8000);
 
             isCollecting = false;
             inflatePrompt.classList.add('hidden');
             congratsMessage.style.display = 'none';
         }
 
-        // Function to reset the balloon based on current mode
+    
+        function popBalloon() {
+            if (isPopping) return;
+            isPopping = true;
+
+            popAudio.currentTime = 0;
+            popAudio.play();
+            balloonImage.style.display = 'none';
+            popMessage.style.display = 'block';
+
+            // REVERT piggy bank to saved value
+            if (mode === 'inflateUntilPop') {
+                practicePoints = savedPracticePoints;
+                updatePracticePiggyBank();
+            }
+
+            setTimeout(() => {
+                popMessage.style.display = 'none';
+                resetBalloon();
+                isPopping = false;
+            }, 3000);
+
+            isCollecting = false;
+            inflatePrompt.classList.add('hidden');
+            congratsMessage.style.display = 'none';
+        }
+
+
+    
         function resetBalloon() {
             setBalloonParameters();
         }
-
-        // Countdown timer functionality
-        function startCountdown() {
-            let timeLeft = 180; // 3 minutes in seconds
-            const timerElement = document.getElementById('timer');
-            
-            const countdown = setInterval(() => {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                
-                timerElement.textContent = `\${String(minutes).padStart(2, '0')}:\${String(seconds).padStart(2, '0')}`;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(countdown);
-                    document.getElementById('startTaskButton').click();
-                }
-                
-                timeLeft--;
-            }, 1000);
-
-            // Clear the interval if the start button is clicked manually
-            document.getElementById('startTaskButton').addEventListener('click', () => {
-                clearInterval(countdown);
-            });
-        }
-
-        // Key press event listener
+    
         window.addEventListener('keydown', (event) => {
             const key = event.key.toLowerCase();
 
-            if (mode === 'page1') {
+            if (mode === 'inflate5') {
                 if (key === 'f' || key === 'arrowleft') {
                     inflateBalloon();
                 } else if (key === 'j' || key === 'arrowright') {
                     collectPoints();
                 }
-            } else if (mode === 'page2') {
+            } else if (mode === 'inflateUntilPop') {
                 if (key === 'f' || key === 'arrowleft') {
                     inflateBalloon();
                 }
             }
         });
 
-        // Navigation buttons
+
+        nextToPage1.addEventListener('click', () => {
+            document.getElementById('instructionsPage0').classList.add('hidden');
+            document.getElementById('instructionsPage1').classList.remove('hidden');
+        });
+    
         nextToPage2.addEventListener('click', () => {
+            const piggyContainer = document.getElementById('practicePiggyContainer');
+            piggyContainer.classList.remove('hidden')
+            piggyContainer.style.display = 'flex'; // Explicitly set display
             firstPage.classList.add('hidden');
             secondPage.classList.remove('hidden');
-            mode = 'page2';
+            document.getElementById('practicePiggyContainer').classList.remove('hidden');
+            document.querySelector('.main-container').classList.remove('centered'); // <-- ADD THIS
+            mode = 'inflate5'; 
             setBalloonParameters();
+            document.querySelector('.instructions-container').classList.remove('wide');
+            document.querySelector('.instructions-container').classList.remove('centered-instructions');
         });
 
+
         nextToPage3.addEventListener('click', () => {
-            // Hide page2, show page3, etc.
+            const piggyContainer = document.getElementById('practicePiggyContainer');
+            piggyContainer.classList.remove('hidden');
+            congratsMessage.style.display = 'none';
             secondPage.classList.add('hidden');
             thirdPage.classList.remove('hidden');
-            mode = 'page3';
+            mode = 'inflateUntilPop';  
             setBalloonParameters();
+            savedPracticePoints = practicePoints; 
+        });
 
-            const container = document.querySelector('.instructions-container');
-            container.style.width = '60%';
-            container.style.height = 'auto';
-            container.style.margin = '0 auto';
-            container.style.padding = '40px';
 
-            const mainContainer = document.querySelector('.main-container');
-            mainContainer.style.justifyContent = 'center';
-            mainContainer.style.alignItems = 'center';
-
-            // Show the timer only now
-            const timerElement = document.getElementById('timer');
-            timerElement.style.display = 'block';
-
+        nextToPage4.addEventListener('click', () => {
+            document.getElementById('practicePiggyContainer').classList.add('hidden');
+            thirdPage.classList.add('hidden');
+            fourthPage.classList.remove('hidden');
+            mode = null;
             const balloonContainer = document.querySelector('.balloon-container');
             balloonContainer.style.display = 'none';
+            document.querySelector('.main-container').classList.add('centered');
+            document.querySelector('.instructions-container').classList.add('centered-instructions');
+            document.querySelector('.instructions-container').classList.add('wide');
+        });
 
-            // Start the 3-minute countdown
-            let timeLeft = 180;
-            timerElement.textContent = formatTime(timeLeft);
+        function collectPoints() {
+            if (mode !== 'inflate5') return;
 
-            const countdownInterval = setInterval(() => {
-                timeLeft--;
-                if (timeLeft < 0) {
-                clearInterval(countdownInterval);
-                document.getElementById('startTaskButton').click();
-                } else {
-                timerElement.textContent = formatTime(timeLeft);
-                }
-            }, 1000);
-            });
-        // Event listener for Start Task button
+            if (!isCollecting) {
+                showNotification('Blasen Sie noch mehr auf!', 5000);
+                return;
+            }
+
+            practiceCurrentBalloonPoints = 0;
+            updatePracticePiggyBank();
+
+            bankAudio.currentTime = 0;
+            bankAudio.play();
+
+            // Hide balloon and disable inflation
+            balloonImage.style.display = 'none';
+            balloonVisible = false; // <-- BLOCK F KEY
+
+            // Show congrats message
+            congratsMessage.textContent = 'Den Bonus haben Sie somit verdient, und Sie beginnen mit dem nächsten Ballon.';
+            congratsMessage.style.display = 'block';
+
+            setTimeout(() => {
+                congratsMessage.style.display = 'none';
+                balloonImage.style.display = 'block';
+                balloonVisible = true; // <-- ENABLE F KEY again
+                resetBalloon();
+            }, 3000);
+
+            // Reset instruction text
+            instructionSentence.innerHTML = `Versuchen Sie jetzt, den Ballon mit der <b>F-Taste</b> aufzublasen. Sie sehen wie Ihr Bonus ansteigt!`;
+
+            inflatePrompt.classList.add('hidden');
+            isCollecting = false;
+        }
+
+
+    
         startTaskButton.addEventListener('click', () => {
             jatos.submitResultData({    
                 participant_id: participantID,            
@@ -511,26 +605,21 @@
                 showNotification("Error submitting data. Please try again.", 5000);
             });
         });
-
-        // Initialize balloon parameters on page load
+    
         window.onload = function() {
             setBalloonParameters();
+            document.querySelector('.main-container').classList.add('centered');
+            const piggyContainer = document.getElementById('practicePiggyContainer');
+            piggyContainer.classList.add('hidden');
+            piggyContainer.style.display = 'none';
+            document.querySelector('.instructions-container').classList.add('centered-instructions');
+            document.querySelector('.instructions-container').classList.add('wide');
         }
-
-
-
+    
         function goToNextComponent() {
-            studyInProgress = false; // Disable the warning before navigation
+            studyInProgress = false;
             jatos.startNextComponent();
         }
-
-
-        function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
-            }
-
-    </script>
+    </script>    
 </body>
 </html>
